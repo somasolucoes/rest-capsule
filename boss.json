@@ -1,0 +1,12 @@
+{
+	"name": "rest-capsule",
+	"description": "Capsule to do a REST communication efficiently",
+	"version": "1.0.0",
+	"homepage": "https://somasolucoes.com/",
+	"mainsrc": "./",
+	"projects": [],
+	"dependencies": {
+		"https://github.com/somasolucoes/core-capsule": "^v1.0.0",
+		"https://github.com/somasolucoes/log-capsule": "^v1.0.0"
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"hash": "7171383200097b2942de402abf673ea1",
+	"updated": "2022-02-23T11:55:57.9157135-03:00",
+	"installedModules": {
+		"https://github.com/somasolucoes/core-capsule": {
+			"name": "core-capsule",
+			"version": "v1.0.0",
+			"hash": "1ccb95e79ca95a9232b89bd0da071263",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"https://github.com/somasolucoes/log-capsule": {
+			"name": "log-capsule",
+			"version": "v1.0.0",
+			"hash": "40a92cd781a34ae318642bb8e174b0c2",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		}
+	}
+}
