@@ -12,8 +12,8 @@
 		},
 		"https://github.com/somasolucoes/log-capsule": {
 			"name": "log-capsule",
-			"version": "v1.0.1",
-			"hash": "f7e7971c8cd52b870cb4ca1f587ee70f",
+			"version": "v1.0.2",
+			"hash": "7f27a64e2bdd213829c772e89aa33137",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
