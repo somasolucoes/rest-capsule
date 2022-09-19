@@ -14,6 +14,7 @@ type
     function OnBaseURL(ABaseURL: string): IRESTRequestBuilder;
     function AtEndPoint(AEndPoint: string): IRESTRequestBuilder;
     function UsingQueryParams(AQueryParams: TDictionary<TQueryParamKey, TQueryParamValue>): IRESTRequestBuilder;
+    function WithHeaders(AHeaders: TDictionary<THeaderKey, THeaderValue>): IRESTRequestBuilder;
     function WithBody(ABody: string): IRESTRequestBuilder;
     function WithContentType(AContentType: TRESTContentType): IRESTRequestBuilder;
     function UsingMethod(AMethod: TRESTRequestMethod): IRESTRequestBuilder;
@@ -88,6 +89,27 @@ function TRESTRequestBuilder.WithContentType(
   AContentType: TRESTContentType): IRESTRequestBuilder;
 begin
   Self.FResquest.ContentType := AContentType;
+  Result := Self;
+end;
+
+function TRESTRequestBuilder.WithHeaders(
+  AHeaders: TDictionary<THeaderKey, THeaderValue>): IRESTRequestBuilder;
+var
+  LHeadersKeys: TArray<THeaderKey>;
+  LHeadersValues: TArray<THeaderValue>;
+  I, LHeadersCount: Integer;
+begin
+  if Assigned(AHeaders) then
+  begin
+    LHeadersKeys := AHeaders.Keys.ToArray;
+    LHeadersValues := AHeaders.Values.ToArray;
+    LHeadersCount := AHeaders.Count;
+    for I := ZeroValue to Pred(LHeadersCount) do
+    begin
+      Self.FResquest.Headers.AddOrSetValue(LHeadersKeys[I],
+                                           LHeadersValues[I]);
+    end;
+  end;
   Result := Self;
 end;
 

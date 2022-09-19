@@ -15,6 +15,7 @@ type
     FResponse: IRESTResponse;
     FBaseUrl: string;
     FQueryParams: TDictionary<TQueryParamKey, TQueryParamValue>;
+    FHeaders: TDictionary<THeaderKey, THeaderValue>;
     FOnRequestSuccess: TProc<IRESTResponse>;
     FOnRequestError: TProc<IRESTResponse>;
     FHasResponse: Boolean;
@@ -33,9 +34,11 @@ type
     property WasRequestSuccessful: Boolean read GetWasRequestSuccessful;
     procedure PrepareRequest(AEndPoint, ABody: string; AContentType: TRESTContentType; AMethod: TRESTRequestMethod);
     procedure AddQueryParamRequest(AKey, AValue: string);
+    procedure AddHeaderRequest(AKey, AValue: string);
     function ExecuteRequest: IRESTResponse;
     procedure GenerateLogResponse(ALogStrategy: ILogStrategy);
     procedure CleanQueryParams;
+    procedure CleanHeaders;
     procedure CleanRequest;
     constructor Create(AClient: IRESTClient; ABaseUrl: string);
     destructor Destroy; override;
@@ -54,12 +57,14 @@ begin
   Self.FClient := AClient;
   Self.FBaseUrl := ABaseUrl;
   Self.FQueryParams := TDictionary<TQueryParamKey, TQueryParamValue>.Create;
+  Self.FHeaders := TDictionary<THeaderKey, THeaderValue>.Create;
   CleanQueryParams;
 end;
 
 destructor TRESTFacade.Destroy;
 begin
   Self.FQueryParams.Free;
+  Self.FHeaders.Free;
   inherited;
 end;
 
@@ -76,7 +81,13 @@ begin
                    .WithBody(ABody)
                    .UsingMethod(AMethod)
                    .UsingQueryParams(Self.FQueryParams)
+                   .WithHeaders(Self.FHeaders)
                    .Build;
+end;
+
+procedure TRESTFacade.AddHeaderRequest(AKey, AValue: string);
+begin
+  Self.FHeaders.AddOrSetValue(AKey, AValue);
 end;
 
 procedure TRESTFacade.AddQueryParamRequest(AKey, AValue: string);
@@ -107,6 +118,12 @@ begin
   end;
 end;
 
+procedure TRESTFacade.CleanHeaders;
+begin
+  Self.FHeaders.Clear;
+  Self.FHeaders.TrimExcess;
+end;
+
 procedure TRESTFacade.CleanQueryParams;
 begin
   Self.FQueryParams.Clear;
@@ -116,6 +133,7 @@ end;
 procedure TRESTFacade.CleanRequest;
 begin
   CleanQueryParams;
+  CleanHeaders;
   Self.FRequest := nil;
   Self.FResponse := nil;
 end;

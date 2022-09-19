@@ -11,6 +11,8 @@ type
     [weak]
     FRequest: IRESTRequest;
     FComponent: TIdHTTP;
+  protected
+    procedure AddHeaders;
   public
     function Execute: string; virtual; abstract;
     constructor Create(ARequest: IRESTRequest; AComponent: TIdHTTP);
@@ -38,6 +40,9 @@ type
 
 implementation
 
+uses
+  Math;
+
 { TRESTClientIndyHTTPCommand }
 
 constructor TRESTClientIndyHTTPCommand.Create(ARequest: IRESTRequest;
@@ -45,6 +50,18 @@ constructor TRESTClientIndyHTTPCommand.Create(ARequest: IRESTRequest;
 begin
   Self.FRequest := ARequest;
   Self.FComponent := AComponent;
+end;
+
+procedure TRESTClientIndyHTTPCommand.AddHeaders;
+var
+  I, LHeadersCount: Integer;
+begin
+  LHeadersCount := Self.FRequest.Headers.Count;
+  for I := ZeroValue to Pred(LHeadersCount) do
+  begin
+    Self.FComponent.Request.CustomHeaders.Values[Self.FRequest.HeadersKeys[I]] :=
+      Self.FRequest.HeadersValues[I];
+  end;
 end;
 
 { TRESTClientIndyHTTPCommandGet }
@@ -56,6 +73,7 @@ begin
   LResponse := nil;
   try
     LResponse := TStringStream.Create(EmptyStr);
+    AddHeaders;
     Self.FComponent.Get(Self.FRequest.URLWithParams, LResponse);
     Result := LResponse.DataString;
   except
@@ -76,6 +94,7 @@ begin
   try
     LResponse := TStringStream.Create(EmptyStr);
     LRequestBody := TStringStream.Create(Self.FRequest.Body);
+    AddHeaders;
     Self.FComponent.Post(Self.FRequest.URLWithParams, LRequestBody, LResponse);
     Result := LResponse.DataString;
   except
@@ -99,6 +118,7 @@ begin
   try
     LResponse := TStringStream.Create(EmptyStr);
     LRequestBody := TStringStream.Create(Self.FRequest.Body);
+    AddHeaders;
     Self.FComponent.Put(Self.FRequest.URLWithParams, LRequestBody, LResponse);
     Result := LResponse.DataString;
   except
@@ -117,6 +137,7 @@ begin
   LResponse := nil;
   try
     LResponse := TStringStream.Create(EmptyStr);
+    AddHeaders;
     Self.FComponent.Delete(Self.FRequest.URLWithParams, LResponse);
     Result := LResponse.DataString;
   except

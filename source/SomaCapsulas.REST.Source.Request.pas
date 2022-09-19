@@ -15,6 +15,7 @@ type
     FBody: string;
     FBaseURL: string;
     FQueryParams: TDictionary<TQueryParamKey, TQueryParamValue>;
+    FHeaders: TDictionary<THeaderKey, THeaderValue>;
     FEndPoint: string;
     FContentType: TRESTContentType;
     function GetBaseURL: string;
@@ -34,11 +35,18 @@ type
     procedure SetMethod(const Value: TRESTRequestMethod);
     procedure SetQueryParams(const Value: TDictionary<TQueryParamKey, TQueryParamValue>);
     procedure SetContentType(const Value: TRESTContentType);
+    function GetHeaders: TDictionary<THeaderKey, THeaderValue>;
+    procedure SetHeaders(const Value: TDictionary<THeaderKey, THeaderValue>);
+    function GetHeadersKeys(I: Integer): THeaderKey;
+    function GetHeadersValues(I: Integer): THeaderValue;
   public
     type Builder = TRESTRequestBuilder;
     property QueryParams: TDictionary<TQueryParamKey, TQueryParamValue> read GetQueryParams write SetQueryParams;
     property QueryParamsKeys[I: Integer]: TQueryParamKey read GetQueryParamsKeys;
     property QueryParamsValues[I: Integer]: TQueryParamValue read GetQueryParamsValues;
+    property Headers: TDictionary<THeaderKey, THeaderValue> read GetHeaders write SetHeaders;
+    property HeadersKeys[I: Integer]: THeaderKey read GetHeadersKeys;
+    property HeadersValues[I: Integer]: THeaderValue read GetHeadersValues;
     property BaseURL: string read GetBaseURL write SetBaseURL;
     property Host: string read GetHost;
     property EndPoint: string read GetEndPoint write SetEndPoint;
@@ -63,6 +71,7 @@ begin
   inherited;
   Self.FMethod := rmGET;
   Self.FQueryParams := TDictionary<TQueryParamKey, TQueryParamValue>.Create;
+  Self.FHeaders := TDictionary<THeaderKey, THeaderValue>.Create;
 end;
 
 constructor TRequest.Create;
@@ -73,6 +82,7 @@ end;
 destructor TRequest.Destroy;
 begin
   Self.FQueryParams.Free;
+  Self.FHeaders.Free;
   inherited;
 end;
 
@@ -94,6 +104,21 @@ end;
 function TRequest.GetEndPoint: string;
 begin
   Result := Self.FEndPoint;
+end;
+
+function TRequest.GetHeaders: TDictionary<THeaderKey, THeaderValue>;
+begin
+  Result := Self.FHeaders;
+end;
+
+function TRequest.GetHeadersKeys(I: Integer): THeaderKey;
+begin
+  Result := Self.Headers.Keys.ToArray[I];
+end;
+
+function TRequest.GetHeadersValues(I: Integer): THeaderValue;
+begin
+  Result := Self.Headers.Values.ToArray[I];
 end;
 
 function TRequest.GetHost: string;
@@ -161,6 +186,12 @@ end;
 procedure TRequest.SetEndPoint(const Value: string);
 begin
   FEndPoint := Value;
+end;
+
+procedure TRequest.SetHeaders(
+  const Value: TDictionary<THeaderKey, THeaderValue>);
+begin
+  FHeaders := Value;
 end;
 
 procedure TRequest.SetMethod(const Value: TRESTRequestMethod);

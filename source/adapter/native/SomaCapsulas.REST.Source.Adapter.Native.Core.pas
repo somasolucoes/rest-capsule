@@ -54,7 +54,7 @@ end;
 function TRESTClientNative.ExecuteRequest(ARequest: IRESTRequest;
   AFallback: TFunc<Exception, IRESTResponse>): IRESTResponse;
 var
-  I, LQueryParamsCount: ShortInt;
+  I, LQueryParamsCount, LHeadersCount: ShortInt;
   LResponse, LFallbackResponse: IRESTResponse;
 begin
   Reset;
@@ -71,6 +71,13 @@ begin
       Self.FRequest.AddParameter(ARequest.QueryParamsKeys[I],
                                  ARequest.QueryParamsValues[I],
                                  pkGETorPOST);
+    end;
+    LHeadersCount := ARequest.Headers.Count;
+    for I := ZeroValue to Pred(LHeadersCount) do
+    begin
+      Self.FRequest.AddParameter(ARequest.HeadersKeys[I],
+                                 ARequest.HeadersValues[I],
+                                 pkHTTPHEADER);
     end;
     Self.FRequest.Execute;
     LResponse := RetrieveResponse;
