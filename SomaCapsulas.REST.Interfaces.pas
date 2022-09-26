@@ -105,6 +105,7 @@ type
     property WasRequestSuccessful: Boolean read GetWasRequestSuccessful;
     procedure PrepareRequest(AEndPoint, ABody: string; AContentType: TRESTContentType; AMethod: TRESTRequestMethod);
     procedure AddQueryParamRequest(AKey, AValue: string);
+    procedure AddHeaderRequest(AKey, AValue: string);
     function ExecuteRequest: IRESTResponse;
     procedure GenerateLogResponse(ALogStrategy: ILogStrategy);
     procedure CleanQueryParams;
