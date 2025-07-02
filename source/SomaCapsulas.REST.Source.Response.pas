@@ -86,7 +86,7 @@ end;
 constructor TResponseStatus.Create(ACode: Word; AText: string);
 begin
   Self.FCode := ACode;
-  Self.FText := AText;
+  Self.FText := AnsiUpperCase(AText);
 end;
 
 function TResponseStatus.GetCode: Word;

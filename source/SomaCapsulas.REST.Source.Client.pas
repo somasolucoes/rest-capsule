@@ -8,7 +8,7 @@ uses
 type
   TRESTClientBase = class abstract(TInterfacedObject, IRESTClient)
   public
-    function ExecuteRequest(ARequest: IRESTRequest; AFallback: TFunc<Exception, IRESTResponse> = nil): IRESTResponse; virtual; abstract;
+    function ExecuteRequest(ARequest: IRESTRequest): IRESTResponse; virtual; abstract;
   end;
 
 implementation end.

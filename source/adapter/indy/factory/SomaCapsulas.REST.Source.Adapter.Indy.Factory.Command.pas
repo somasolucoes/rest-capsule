@@ -28,9 +28,10 @@ begin
       Result := TRESTClientIndyHTTPCommandPost.Create(ARequest, AComponent);
     rmPUT:
       Result := TRESTClientIndyHTTPCommandPut.Create(ARequest, AComponent);
+    rmPATCH:
+      Result := TRESTClientIndyHTTPCommandPatch.Create(ARequest, AComponent);
     rmDELETE:
       Result := TRESTClientIndyHTTPCommandDelete.Create(ARequest, AComponent);
-    rmPATCH:;
   end;
 end;
 

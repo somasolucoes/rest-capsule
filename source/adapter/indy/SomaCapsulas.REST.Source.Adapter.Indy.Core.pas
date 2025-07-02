@@ -14,7 +14,7 @@ type
   protected
     function RetrieveResponse(AResponseBody: string): IRESTResponse;
   public
-    function ExecuteRequest(ARequest: IRESTRequest; AFallback: TFunc<Exception, IRESTResponse> = nil): IRESTResponse; override;
+    function ExecuteRequest(ARequest: IRESTRequest): IRESTResponse; override;
     constructor Create(AContentType: TRESTContentType = ctAPPLICATION_JSON);
     destructor Destroy; override;
   end;
@@ -51,28 +51,17 @@ begin
   inherited;
 end;
 
-function TRESTClientIndy.ExecuteRequest(
-  ARequest: IRESTRequest; AFallback: TFunc<Exception, IRESTResponse>): IRESTResponse;
+function TRESTClientIndy.ExecuteRequest(ARequest: IRESTRequest): IRESTResponse;
 var
   LCommand: IRESTClientIndyHTTPCommand;
   LResponseBody: string;
-  LResponse, LFallbackResponse: IRESTResponse;
+  LResponse: IRESTResponse;
 begin
   Result := nil;
-  try
-    LCommand := TRESTClientIndyHTTPCommandFactory.Assemble(ARequest, Self.FComponent);
-    LResponseBody := LCommand.Execute;
-    LResponse := RetrieveResponse(LResponseBody);
-    Result := LResponse;
-  except
-    on E: Exception do
-    begin
-      if not Assigned(AFallback) then
-        raise;
-      LFallbackResponse := AFallback(E);
-      Result := LFallbackResponse;
-    end;
-  end;
+  LCommand := TRESTClientIndyHTTPCommandFactory.Assemble(ARequest, Self.FComponent);
+  LResponseBody := LCommand.Execute;
+  LResponse := RetrieveResponse(LResponseBody);
+  Result := LResponse;
 end;
 
 function TRESTClientIndy.RetrieveResponse(AResponseBody: string): IRESTResponse;

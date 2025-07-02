@@ -17,7 +17,7 @@ type
     procedure Reset;
     function RetrieveResponse: IRESTResponse;
   public
-    function ExecuteRequest(ARequest: IRESTRequest; AFallback: TFunc<Exception, IRESTResponse> = nil): IRESTResponse; override;
+    function ExecuteRequest(ARequest: IRESTRequest): IRESTResponse; override;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -32,6 +32,7 @@ uses
 constructor TRESTClientNative.Create;
 begin
   Self.FClient := TRESTClient.Create(nil);
+  Self.FClient.UserAgent := 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0';
   Self.FResponse := TRESTResponse.Create(nil);
   Self.FRequest := TRESTRequest.Create(nil);
   Self.FRequest.Timeout := REST_REQUEST_TIMEOUT;
@@ -42,66 +43,51 @@ end;
 
 destructor TRESTClientNative.Destroy;
 begin
-  if Assigned(Self.FClient) then
-    Self.FClient.Free;
-  if Assigned(Self.FRequest) then
-    Self.FRequest.Free;
-  if Assigned(Self.FResponse) then
-    Self.FResponse.Free;
+  Self.FClient.Free;
+  Self.FRequest.Free;
+  Self.FResponse.Free;
   inherited;
 end;
 
-function TRESTClientNative.ExecuteRequest(ARequest: IRESTRequest;
-  AFallback: TFunc<Exception, IRESTResponse>): IRESTResponse;
+function TRESTClientNative.ExecuteRequest(ARequest: IRESTRequest): IRESTResponse;
 var
   I, LQueryParamsCount, LHeadersCount: ShortInt;
-  LResponse, LFallbackResponse: IRESTResponse;
+  LResponse: IRESTResponse;
 begin
-  Reset;
   Result := nil;
-  try
-    Self.FClient.BaseURL   := ARequest.BaseURL;
-    Self.FRequest.Resource := ARequest.EndPoint;
-    Self.FRequest.Method   := ARequest.Method;
-    if not ARequest.Body.IsEmpty then
-      Self.FRequest.Body.Add(ARequest.Body, ARequest.ContentType);
-    LQueryParamsCount := ARequest.QueryParams.Count;
-    for I := ZeroValue to Pred(LQueryParamsCount) do
-    begin
-      Self.FRequest.AddParameter(ARequest.QueryParamsKeys[I],
-                                 ARequest.QueryParamsValues[I],
-                                 pkGETorPOST);
-    end;
-    LHeadersCount := ARequest.Headers.Count;
-    for I := ZeroValue to Pred(LHeadersCount) do
-    begin
-      Self.FRequest.AddParameter(ARequest.HeadersKeys[I],
-                                 ARequest.HeadersValues[I],
-                                 pkHTTPHEADER);
-    end;
-    Self.FRequest.Execute;
-    LResponse := RetrieveResponse;
-    Result := LResponse;
-  except
-    on E: Exception do
-    begin
-      if not Assigned(AFallback) then
-        raise;
-      Reset;
-      LFallbackResponse := AFallback(E);
-      Result := LFallbackResponse;
-    end;
+  Reset;
+  Self.FClient.BaseURL   := ARequest.BaseURL;
+  Self.FRequest.Resource := ARequest.EndPoint;
+  Self.FRequest.Method   := ARequest.Method;
+  if not ARequest.Body.IsEmpty then
+    Self.FRequest.Body.Add(ARequest.Body, ARequest.ContentType);
+  LQueryParamsCount := ARequest.QueryParams.Count;
+  for I := ZeroValue to Pred(LQueryParamsCount) do
+  begin
+    Self.FRequest.AddParameter(ARequest.QueryParamsKeys[I],
+                               ARequest.QueryParamsValues[I],
+                               pkGETorPOST);
   end;
+  LHeadersCount := ARequest.Headers.Count;
+  for I := ZeroValue to Pred(LHeadersCount) do
+  begin
+    Self.FRequest.AddParameter(ARequest.HeadersKeys[I],
+                               ARequest.HeadersValues[I],
+                               pkHTTPHEADER);
+  end;
+  Self.FRequest.Execute;
+  LResponse := RetrieveResponse;
+  Result := LResponse;
 end;
 
 function TRESTClientNative.RetrieveResponse: IRESTResponse;
 var
   LResponseBody: string;
-  LContentType: TRESTContentType;
+  LContentType: string;
   LStatus: IRESTResponseStatus;
 begin
-  LContentType := ContentTypeFromString(Self.FResponse.ContentType);
-  if LContentType in [ctAPPLICATION_JSON, ctAPPLICATION_XML] then
+  LContentType := Self.FResponse.ContentType;
+  if AnsiMatchStr(LContentType, [ctAPPLICATION_JSON, ctAPPLICATION_XML]) then
   begin
     LResponseBody := IfThen(Assigned(Self.FResponse.JSONValue),
                             Self.FResponse.JSONValue.ToString,

@@ -48,8 +48,8 @@ type
     property HeadersKeys[I: Integer]: THeaderKey read GetHeadersKeys;
     property HeadersValues[I: Integer]: THeaderValue read GetHeadersValues;
     property BaseURL: string read GetBaseURL write SetBaseURL;
-    property Host: string read GetHost;
     property EndPoint: string read GetEndPoint write SetEndPoint;
+    property Host: string read GetHost;
     property URL: string read GetURL;
     property URLWithParams: string read GetURLWithParams;
     property Body: string read GetBody write SetBody;

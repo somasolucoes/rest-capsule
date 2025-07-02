@@ -33,6 +33,11 @@ type
     function Execute: string; override;
   end;
 
+  TRESTClientIndyHTTPCommandPatch = class (TRESTClientIndyHTTPCommand)
+  public
+    function Execute: string; override;
+  end;
+
   TRESTClientIndyHTTPCommandDelete = class (TRESTClientIndyHTTPCommand)
   public
     function Execute: string; override;
@@ -120,6 +125,27 @@ begin
     LRequestBody := TStringStream.Create(Self.FRequest.Body);
     AddHeaders;
     Self.FComponent.Put(Self.FRequest.URLWithParams, LRequestBody, LResponse);
+    Result := LResponse.DataString;
+  except
+    on E: Exception do;
+  end;
+  LRequestBody.Free;
+  LResponse.Free;
+end;
+
+{ TRESTClientIndyHTTPCommandPatch }
+
+function TRESTClientIndyHTTPCommandPatch.Execute: string;
+var
+  LRequestBody, LResponse: TStringStream;
+begin
+  LRequestBody := nil;
+  LResponse := nil;
+  try
+    LResponse := TStringStream.Create(EmptyStr);
+    LRequestBody := TStringStream.Create(Self.FRequest.Body);
+    AddHeaders;
+    Self.FComponent.Patch(Self.FRequest.URLWithParams, LRequestBody, LResponse);
     Result := LResponse.DataString;
   except
     on E: Exception do;

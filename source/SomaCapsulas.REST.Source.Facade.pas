@@ -18,7 +18,6 @@ type
     FHeaders: TDictionary<THeaderKey, THeaderValue>;
     FOnRequestSuccess: TProc<IRESTResponse>;
     FOnRequestError: TProc<IRESTResponse>;
-    FHasResponse: Boolean;
     function GetOnRequestError: TProc<IRESTResponse>;
     function GetOnRequestSuccess: TProc<IRESTResponse>;
     function GetHasResponse: Boolean;
@@ -57,8 +56,9 @@ begin
   Self.FClient := AClient;
   Self.FBaseUrl := ABaseUrl;
   Self.FQueryParams := TDictionary<TQueryParamKey, TQueryParamValue>.Create;
-  Self.FHeaders := TDictionary<THeaderKey, THeaderValue>.Create;
   CleanQueryParams;
+  Self.FHeaders := TDictionary<THeaderKey, THeaderValue>.Create;
+  CleanHeaders;
 end;
 
 destructor TRESTFacade.Destroy;
@@ -153,9 +153,9 @@ begin
   if (Self.HasResponse) then
   begin
     ALogStrategy.Generate(Format('%s [%d - %s] %s', [RESTRequestMethodToString(Self.FRequest.Method),
-                                             Self.FResponse.Status.Code,
-                                             Self.FResponse.Status.Text,
-                                             Self.FRequest.EndPoint]));
+                                                     Self.FResponse.Status.Code,
+                                                     Self.FResponse.Status.Text,
+                                                     Self.FRequest.URL]));
   end;
 end;
 

@@ -83,7 +83,7 @@ type
 
   IRESTClient = interface
   ['{77DED12B-6FF3-4790-AD93-7508E8C7DED7}']
-    function ExecuteRequest(ARequest: IRESTRequest; AFallback: TFunc<Exception, IRESTResponse> = nil): IRESTResponse;
+    function ExecuteRequest(ARequest: IRESTRequest): IRESTResponse;
   end;
 
   IRESTClientIndyHTTPCommand = interface
